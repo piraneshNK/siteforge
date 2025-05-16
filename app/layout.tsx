@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Instantly analyze your website's SEO with our free AI-powered tool. Get actionable recommendations to improve your search engine rankings.",
   keywords: "SEO analyzer, website audit, SEO tool, free SEO checker, SEO score, website optimization",
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="icon" type="image/png" href="/favicon.png"> </link>
   authors: [{ name: "SiteForge Team" }],
   creator: "SiteForge",
   publisher: "SiteForge",
