@@ -4,6 +4,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 export function TestimonialsSection() {
   const testimonials = [
     {
+      name: "Piranesh N K",
+      role: "Startup Founder & CEO",
+      content:
+        "As a technical and non-technical founder, SiteForge gave me actionable SEO insights without the technical jargon. Highly recommended!",
+      avatar: "PK",
+    },
+    {
+      name: "Mithran",
+      role: "CO-Startup Founder",
+      content:
+        "As a co-founder managing multiple launches, SiteForge’s instant audits gave us clarity without the complexity. It's now essential for our workflow!",
+      avatar: "M",
+    },
+    {
       name: "Chandru",
       role: "Frontend Developer",
       content:
@@ -16,20 +30,6 @@ export function TestimonialsSection() {
       content:
         "The instant analysis saved our team countless hours. We now run all our client websites through SiteForge before launch.",
       avatar: "L",
-    },
-    {
-      name: "Piranesh N K",
-      role: "Startup Founder",
-      content:
-        "As a technical and non-technical founder, SiteForge gave me actionable SEO insights without the technical jargon. Highly recommended!",
-      avatar: "PK",
-    },
-    {
-      name: "Mithran",
-      role: "CO-Startup Founder",
-      content:
-        "As a co-founder managing multiple launches, SiteForge’s instant audits gave us clarity without the complexity. It's now essential for our workflow!",
-      avatar: "M",
     },
     {
       name: "Viswas Sundar Raghavan",
