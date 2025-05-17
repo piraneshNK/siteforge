@@ -24,7 +24,9 @@ export function HeroSection() {
             </p>
           </div>
 
-          <ToolSelector />
+          <div className="w-full max-w-3xl">
+            <ToolSelector />
+          </div>
 
           {error && (
             <Alert variant="destructive" className="mt-4 max-w-md">

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { SiteLogo } from "@/components/site-logo"
+import { Linkedin } from "lucide-react"
 
 export function SiteFooter() {
   return (
@@ -30,9 +31,20 @@ export function SiteFooter() {
             </Link>
           </nav>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          © {new Date().getFullYear()} SiteForge. All rights reserved.
-        </p>
+        <div className="flex items-center gap-4">
+          <Link
+            href="https://www.linkedin.com/company/siteforge-diy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-[#0A66C2] transition-colors"
+            aria-label="Follow us on LinkedIn"
+          >
+            <Linkedin className="h-5 w-5" />
+          </Link>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            © {new Date().getFullYear()} SiteForge. All rights reserved.
+          </p>
+        </div>
       </div>
     </footer>
   )

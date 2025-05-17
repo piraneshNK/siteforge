@@ -60,14 +60,22 @@ export function ToolSelector() {
   return (
     <div className="w-full max-w-3xl mx-auto mt-8">
       <Tabs defaultValue="seo-analyzer" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-4">
-          <TabsTrigger value="seo-analyzer">SEO Analyzer</TabsTrigger>
-          <TabsTrigger value="keyword-research">Keyword Research</TabsTrigger>
-          <TabsTrigger value="backlink-checker">Backlink Checker</TabsTrigger>
-          <TabsTrigger value="other" onClick={handleOtherClick}>
-            Other <ChevronDown className="ml-1 h-3 w-3" />
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="inline-flex w-full sm:w-auto">
+            <TabsTrigger value="seo-analyzer" className="whitespace-nowrap">
+              SEO Analyzer
+            </TabsTrigger>
+            <TabsTrigger value="keyword-research" className="whitespace-nowrap">
+              Keyword Research
+            </TabsTrigger>
+            <TabsTrigger value="backlink-checker" className="whitespace-nowrap">
+              Backlink Checker
+            </TabsTrigger>
+            <TabsTrigger value="other" onClick={handleOtherClick} className="whitespace-nowrap">
+              Other <ChevronDown className="ml-1 h-3 w-3" />
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <Card className="mt-4 border-2">
           <CardContent className="pt-6">
@@ -80,7 +88,7 @@ export function ToolSelector() {
                     </div>
                     <Input className="pl-10 h-12" placeholder="Enter your website URL" disabled={isLoading} required />
                   </div>
-                  <Button type="submit" className="h-12 px-8" disabled={isLoading}>
+                  <Button type="submit" className="h-12 w-full sm:w-auto" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -112,7 +120,7 @@ export function ToolSelector() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="h-12 px-8" disabled={isLoading}>
+                  <Button type="submit" className="h-12 w-full sm:w-auto" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -144,7 +152,7 @@ export function ToolSelector() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="h-12 px-8" disabled={isLoading}>
+                  <Button type="submit" className="h-12 w-full sm:w-auto" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

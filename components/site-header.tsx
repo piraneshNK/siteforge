@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { SiteLogo } from "@/components/site-logo"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Linkedin } from "lucide-react"
 
 export function SiteHeader() {
   const scrollToSection = (id: string) => {
@@ -74,6 +74,15 @@ export function SiteHeader() {
           <Button variant="ghost" size="sm" onClick={() => scrollToSection("testimonials")}>
             Testimonials
           </Button>
+          <Link
+            href="https://www.linkedin.com/company/siteforge-diy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 hover:text-[#0A66C2] transition-colors"
+            aria-label="Follow us on LinkedIn"
+          >
+            <Linkedin className="h-5 w-5" />
+          </Link>
           <Button variant="default" size="sm" onClick={() => scrollToSection("hero")}>
             Get Started
           </Button>
