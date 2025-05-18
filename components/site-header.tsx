@@ -71,9 +71,10 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button variant="ghost" size="sm" onClick={() => scrollToSection("testimonials")}>
-            Testimonials
+          <Button variant="ghost" size="sm" onClick={() => scrollToSection("about")}>
+            About Us
           </Button>
+
           <Link
             href="https://www.linkedin.com/company/siteforge-diy"
             target="_blank"

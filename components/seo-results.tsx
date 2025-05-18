@@ -497,8 +497,109 @@ export function SEOResults({ results }: { results: AnalysisResult }) {
                         </div>
                       </CardContent>
                     </Card>
+
+                    {results.performance.totalBlockingTime && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Clock className="h-5 w-5 mr-2 text-red-500" />
+                              <div>
+                                <p className="text-sm font-medium">Total Blocking Time</p>
+                                <p className="text-xs text-gray-500">Sum of all blocking periods</p>
+                              </div>
+                            </div>
+                            <p className="text-xl font-bold">{results.performance.totalBlockingTime}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {results.performance.cumulativeLayoutShift && (
+                      <Card>
+                        <CardContent className="pt-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <Zap className="h-5 w-5 mr-2 text-orange-500" />
+                              <div>
+                                <p className="text-sm font-medium">Cumulative Layout Shift</p>
+                                <p className="text-xs text-gray-500">Visual stability measure</p>
+                              </div>
+                            </div>
+                            <p className="text-xl font-bold">{results.performance.cumulativeLayoutShift}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 </div>
+
+                {results.pageSpeedData && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3">Mobile vs Desktop Performance</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Mobile Performance</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Performance</span>
+                              <span className="font-medium">{results.pageSpeedData.mobile.scores.performance}/100</span>
+                            </div>
+                            <Progress value={results.pageSpeedData.mobile.scores.performance} className="h-2" />
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">SEO</span>
+                              <span className="font-medium">{results.pageSpeedData.mobile.scores.seo}/100</span>
+                            </div>
+                            <Progress value={results.pageSpeedData.mobile.scores.seo} className="h-2" />
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Accessibility</span>
+                              <span className="font-medium">
+                                {results.pageSpeedData.mobile.scores.accessibility}/100
+                              </span>
+                            </div>
+                            <Progress value={results.pageSpeedData.mobile.scores.accessibility} className="h-2" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Desktop Performance</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Performance</span>
+                              <span className="font-medium">
+                                {results.pageSpeedData.desktop.scores.performance}/100
+                              </span>
+                            </div>
+                            <Progress value={results.pageSpeedData.desktop.scores.performance} className="h-2" />
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">SEO</span>
+                              <span className="font-medium">{results.pageSpeedData.desktop.scores.seo}/100</span>
+                            </div>
+                            <Progress value={results.pageSpeedData.desktop.scores.seo} className="h-2" />
+
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Accessibility</span>
+                              <span className="font-medium">
+                                {results.pageSpeedData.desktop.scores.accessibility}/100
+                              </span>
+                            </div>
+                            <Progress value={results.pageSpeedData.desktop.scores.accessibility} className="h-2" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Performance Recommendations</h3>

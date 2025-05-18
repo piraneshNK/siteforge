@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
+import { analyzePageSpeed, extractPerformanceMetrics } from "@/utils/pagespeed-api"
 
-// Enhanced SEO analysis function with more detailed checks
-function analyzeSEO(url: string) {
+// Enhanced SEO analysis function with more detailed checks and real PageSpeed data
+async function analyzeSEO(url: string) {
   // In a real app, this would actually crawl the website and analyze it
   // For demo purposes, we'll generate more comprehensive mock data
 
@@ -19,18 +20,52 @@ function analyzeSEO(url: string) {
     return Math.floor(random * (max - min + 1) + min)
   }
 
-  const scores = {
-    overall: generateScore(60, 100, "neutral"),
-    performance: generateScore(50, 100, "low"),
-    seo: generateScore(60, 100, "neutral"),
-    accessibility: generateScore(55, 100, "low"),
-    bestPractices: generateScore(65, 100, "high"),
+  // Get real performance data from PageSpeed Insights API
+  let performanceData = null
+  try {
+    // First try mobile analysis
+    const mobileResult = await analyzePageSpeed(url, "mobile")
+    const mobileMetrics = extractPerformanceMetrics(mobileResult)
+
+    // Then try desktop analysis
+    const desktopResult = await analyzePageSpeed(url, "desktop")
+    const desktopMetrics = extractPerformanceMetrics(desktopResult)
+
+    if (mobileMetrics && desktopMetrics) {
+      performanceData = {
+        mobile: mobileMetrics,
+        desktop: desktopMetrics,
+        // Use the average of mobile and desktop for overall scores
+        scores: {
+          performance: Math.round((mobileMetrics.scores.performance + desktopMetrics.scores.performance) / 2),
+          accessibility: Math.round((mobileMetrics.scores.accessibility + desktopMetrics.scores.accessibility) / 2),
+          bestPractices: Math.round((mobileMetrics.scores.bestPractices + desktopMetrics.scores.bestPractices) / 2),
+          seo: Math.round((mobileMetrics.scores.seo + desktopMetrics.scores.seo) / 2),
+        },
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching PageSpeed data:", error)
+    // Continue with mock data if API fails
   }
 
-  // Calculate overall score as weighted average of individual scores
-  scores.overall = Math.round(
-    scores.performance * 0.25 + scores.seo * 0.35 + scores.accessibility * 0.2 + scores.bestPractices * 0.2,
-  )
+  // Use real scores if available, otherwise generate mock scores
+  const scores = performanceData
+    ? performanceData.scores
+    : {
+        overall: generateScore(60, 100, "neutral"),
+        performance: generateScore(50, 100, "low"),
+        seo: generateScore(60, 100, "neutral"),
+        accessibility: generateScore(55, 100, "low"),
+        bestPractices: generateScore(65, 100, "high"),
+      }
+
+  // Calculate overall score as weighted average of individual scores if not provided
+  if (!scores.overall) {
+    scores.overall = Math.round(
+      scores.performance * 0.25 + scores.seo * 0.35 + scores.accessibility * 0.2 + scores.bestPractices * 0.2,
+    )
+  }
 
   // More comprehensive issues categorization
   const issues = {
@@ -270,7 +305,19 @@ function analyzeSEO(url: string) {
 
   // Generate prioritized recommendations based on issues
   const generateRecommendations = () => {
+    // Add PageSpeed recommendations if available
+    const pageSpeedRecs = performanceData
+      ? [
+          ...performanceData.mobile.opportunities.map((opp) => ({
+            priority: opp.score && opp.score < 0.5 ? "high" : "medium",
+            title: opp.title,
+            description: opp.description,
+          })),
+        ]
+      : []
+
     const recommendations = [
+      ...pageSpeedRecs,
       ...criticalIssues.map((issue) => ({
         priority: "high",
         title: issue.title,
@@ -319,6 +366,24 @@ function analyzeSEO(url: string) {
     }))
   }
 
+  // Use real performance metrics if available, otherwise generate mock data
+  const performanceMetrics = performanceData
+    ? {
+        loadTime: performanceData.mobile.metrics.speedIndex,
+        firstContentfulPaint: performanceData.mobile.metrics.firstContentfulPaint,
+        largestContentfulPaint: performanceData.mobile.metrics.largestContentfulPaint,
+        timeToInteractive: performanceData.mobile.metrics.timeToInteractive,
+        cumulativeLayoutShift: performanceData.mobile.metrics.cumulativeLayoutShift,
+        totalBlockingTime: performanceData.mobile.metrics.totalBlockingTime,
+      }
+    : {
+        loadTime: (Math.random() * 5 + 1).toFixed(2) + "s",
+        firstContentfulPaint: (Math.random() * 2 + 0.5).toFixed(2) + "s",
+        largestContentfulPaint: (Math.random() * 3 + 1).toFixed(2) + "s",
+        timeToInteractive: (Math.random() * 4 + 1.5).toFixed(2) + "s",
+        cumulativeLayoutShift: (Math.random() * 0.5).toFixed(2),
+      }
+
   return {
     url,
     timestamp: new Date().toISOString(),
@@ -331,13 +396,8 @@ function analyzeSEO(url: string) {
     },
     recommendations: generateRecommendations(),
     keywords: generateKeywordData(),
-    performance: {
-      loadTime: (Math.random() * 5 + 1).toFixed(2),
-      firstContentfulPaint: (Math.random() * 2 + 0.5).toFixed(2),
-      largestContentfulPaint: (Math.random() * 3 + 1).toFixed(2),
-      timeToInteractive: (Math.random() * 4 + 1.5).toFixed(2),
-      cumulativeLayoutShift: (Math.random() * 0.5).toFixed(2),
-    },
+    performance: performanceMetrics,
+    pageSpeedData: performanceData, // Include the raw PageSpeed data for advanced users
   }
 }
 
@@ -359,7 +419,7 @@ export async function POST(request: Request) {
     // Simulate network delay - reduced for better UX
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const analysis = analyzeSEO(url)
+    const analysis = await analyzeSEO(url)
 
     return NextResponse.json(analysis)
   } catch (error) {
