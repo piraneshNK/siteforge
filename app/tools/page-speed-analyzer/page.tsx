@@ -1,4 +1,4 @@
-import PageSpeedAnalyzerPageClient from "./page.client"
+import PageSpeedAnalyzerPageClient from "./page.client.tsx"
 
 export const metadata = {
   title: "Page Speed Analyzer - SiteForge",
