@@ -1,10 +1,8 @@
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { ContentAnalyzerClient } from "./content-analyzer-client"
 
 export const metadata = {
   title: "Content Analyzer - SiteForge",
@@ -31,24 +29,7 @@ export default function ContentAnalyzerPage() {
             </p>
           </div>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Analyze Content</CardTitle>
-              <CardDescription>Paste your content to analyze its SEO potential and readability.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Textarea placeholder="Paste your content here..." className="min-h-[200px]" />
-                <div className="flex justify-end">
-                  <Button>Analyze Content</Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-center p-12 border rounded-lg bg-gray-50">
-            <p className="text-gray-500">Paste your content above to see analysis results.</p>
-          </div>
+          <ContentAnalyzerClient />
         </div>
       </main>
       <SiteFooter />

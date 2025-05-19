@@ -1,10 +1,8 @@
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { KeywordResearchClient } from "./keyword-research-client"
 
 export const metadata = {
   title: "Keyword Research Tool - SiteForge",
@@ -31,22 +29,7 @@ export default function KeywordResearchPage() {
             </p>
           </div>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Search for Keywords</CardTitle>
-              <CardDescription>Enter a seed keyword to find related keywords and search volume data.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input placeholder="Enter a keyword (e.g., SEO tools)" className="flex-1" />
-                <Button>Research</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-center p-12 border rounded-lg bg-gray-50">
-            <p className="text-gray-500">Enter a keyword above to see research results.</p>
-          </div>
+          <KeywordResearchClient />
         </div>
       </main>
       <SiteFooter />

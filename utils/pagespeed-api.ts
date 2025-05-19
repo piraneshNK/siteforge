@@ -29,8 +29,13 @@ export interface PageSpeedResult {
   }
   error?: {
     message: string
+    code?: number
   }
 }
+
+// Simple in-memory cache to reduce API calls
+const cache: Record<string, { data: PageSpeedResult; timestamp: number }> = {}
+const CACHE_TTL = 3600000 // 1 hour in milliseconds
 
 export async function analyzePageSpeed(
   url: string,
@@ -39,6 +44,15 @@ export async function analyzePageSpeed(
   try {
     // Ensure URL is properly formatted
     const formattedUrl = url.startsWith("http") ? url : `https://${url}`
+
+    // Create a cache key
+    const cacheKey = `${formattedUrl}-${strategy}`
+
+    // Check if we have a cached result
+    if (cache[cacheKey] && Date.now() - cache[cacheKey].timestamp < CACHE_TTL) {
+      console.log("Using cached PageSpeed result for:", formattedUrl)
+      return cache[cacheKey].data
+    }
 
     // Build the API URL with parameters
     const apiUrl = new URL("https://www.googleapis.com/pagespeedonline/v5/runPagespeed")
@@ -57,11 +71,28 @@ export async function analyzePageSpeed(
       },
     })
 
+    if (response.status === 429) {
+      console.warn("PageSpeed API rate limit exceeded")
+      return {
+        error: {
+          message: "Rate limit exceeded. Please try again later.",
+          code: 429,
+        },
+      }
+    }
+
     if (!response.ok) {
       throw new Error(`PageSpeed API error: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
+
+    // Cache the result
+    cache[cacheKey] = {
+      data,
+      timestamp: Date.now(),
+    }
+
     return data as PageSpeedResult
   } catch (error) {
     console.error("Error analyzing page speed:", error)

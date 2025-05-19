@@ -54,4 +54,7 @@ export interface AnalysisResult {
     timeToInteractive: string
     cumulativeLayoutShift: string
   }
+  pageSpeedData?: any
+  apiRateLimited?: boolean
+  apiRateLimitedMessage?: string
 }

@@ -22,26 +22,50 @@ async function analyzeSEO(url: string) {
 
   // Get real performance data from PageSpeed Insights API
   let performanceData = null
+  let apiRateLimited = false
+
   try {
     // First try mobile analysis
     const mobileResult = await analyzePageSpeed(url, "mobile")
-    const mobileMetrics = extractPerformanceMetrics(mobileResult)
 
-    // Then try desktop analysis
-    const desktopResult = await analyzePageSpeed(url, "desktop")
-    const desktopMetrics = extractPerformanceMetrics(desktopResult)
+    // Check if we hit rate limits
+    if (mobileResult.error && mobileResult.error.code === 429) {
+      apiRateLimited = true
+      console.warn("PageSpeed API rate limited for mobile analysis")
+    } else {
+      const mobileMetrics = extractPerformanceMetrics(mobileResult)
 
-    if (mobileMetrics && desktopMetrics) {
-      performanceData = {
-        mobile: mobileMetrics,
-        desktop: desktopMetrics,
-        // Use the average of mobile and desktop for overall scores
-        scores: {
-          performance: Math.round((mobileMetrics.scores.performance + desktopMetrics.scores.performance) / 2),
-          accessibility: Math.round((mobileMetrics.scores.accessibility + desktopMetrics.scores.accessibility) / 2),
-          bestPractices: Math.round((mobileMetrics.scores.bestPractices + desktopMetrics.scores.bestPractices) / 2),
-          seo: Math.round((mobileMetrics.scores.seo + desktopMetrics.scores.seo) / 2),
-        },
+      // Only proceed with desktop analysis if mobile was successful
+      if (mobileMetrics) {
+        // Add a small delay to avoid hitting rate limits
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        const desktopResult = await analyzePageSpeed(url, "desktop")
+
+        if (desktopResult.error && desktopResult.error.code === 429) {
+          apiRateLimited = true
+          console.warn("PageSpeed API rate limited for desktop analysis")
+        } else {
+          const desktopMetrics = extractPerformanceMetrics(desktopResult)
+
+          if (mobileMetrics && desktopMetrics) {
+            performanceData = {
+              mobile: mobileMetrics,
+              desktop: desktopMetrics,
+              // Use the average of mobile and desktop for overall scores
+              scores: {
+                performance: Math.round((mobileMetrics.scores.performance + desktopMetrics.scores.performance) / 2),
+                accessibility: Math.round(
+                  (mobileMetrics.scores.accessibility + desktopMetrics.scores.accessibility) / 2,
+                ),
+                bestPractices: Math.round(
+                  (mobileMetrics.scores.bestPractices + desktopMetrics.scores.bestPractices) / 2,
+                ),
+                seo: Math.round((mobileMetrics.scores.seo + desktopMetrics.scores.seo) / 2),
+              },
+            }
+          }
+        }
       }
     }
   } catch (error) {
@@ -384,7 +408,7 @@ async function analyzeSEO(url: string) {
         cumulativeLayoutShift: (Math.random() * 0.5).toFixed(2),
       }
 
-  return {
+  const result = {
     url,
     timestamp: new Date().toISOString(),
     scores,
@@ -399,6 +423,14 @@ async function analyzeSEO(url: string) {
     performance: performanceMetrics,
     pageSpeedData: performanceData, // Include the raw PageSpeed data for advanced users
   }
+
+  // Add a note if the API was rate limited
+  if (apiRateLimited) {
+    result.apiRateLimited = true
+    result.apiRateLimitedMessage = "PageSpeed API rate limit exceeded. Using estimated performance data."
+  }
+
+  return result
 }
 
 export async function POST(request: Request) {
@@ -417,7 +449,7 @@ export async function POST(request: Request) {
     }
 
     // Simulate network delay - reduced for better UX
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 500))
 
     const analysis = await analyzeSEO(url)
 

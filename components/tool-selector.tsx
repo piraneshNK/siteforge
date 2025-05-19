@@ -8,45 +8,81 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Loader2, Search, Link2, ChevronDown } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export function ToolSelector() {
+  const [url, setUrl] = useState("")
+  const [keyword, setKeyword] = useState("")
+  const [domain, setDomain] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState("seo-analyzer")
+  const router = useRouter()
 
-  const handleSEOAnalyze = (e: React.FormEvent) => {
+  const handleSEOAnalyze = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!url) return
+
     setIsLoading(true)
 
-    // Simulate loading
-    setTimeout(() => {
+    try {
+      // Call our actual API endpoint
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze URL")
+      }
+
+      // Scroll to results section
+      const resultsSection = document.getElementById("seo-results")
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: "smooth" })
+      }
+
+      // In a real implementation, we would update state with the results
+      // For now, we'll just simulate a delay
+      setTimeout(() => {
+        setIsLoading(false)
+        // Trigger a page refresh to show results
+        window.location.href = `/#seo-results?url=${encodeURIComponent(url)}`
+      }, 1500)
+    } catch (error) {
+      console.error("Error analyzing URL:", error)
       setIsLoading(false)
-      // In a real app, this would trigger the analysis
-      alert("This would trigger the SEO analysis in a real app")
-    }, 1500)
+      alert("Failed to analyze URL. Please try again.")
+    }
   }
 
   const handleKeywordResearch = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!keyword) return
+
     setIsLoading(true)
 
-    // Simulate loading
+    // Navigate to the keyword research tool with the keyword as a parameter
     setTimeout(() => {
       setIsLoading(false)
-      // In a real app, this would trigger the keyword research
-      alert("This would trigger the keyword research in a real app")
-    }, 1500)
+      router.push(`/tools/keyword-research?keyword=${encodeURIComponent(keyword)}`)
+    }, 500)
   }
 
   const handleBacklinkCheck = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!domain) return
+
     setIsLoading(true)
 
-    // Simulate loading
+    // Navigate to the backlink checker tool with the domain as a parameter
     setTimeout(() => {
       setIsLoading(false)
-      // In a real app, this would trigger the backlink check
-      alert("This would trigger the backlink check in a real app")
-    }, 1500)
+      router.push(`/tools/backlink-checker?domain=${encodeURIComponent(domain)}`)
+    }, 500)
   }
 
   const handleOtherClick = () => {
@@ -86,7 +122,14 @@ export function ToolSelector() {
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                       <Search className="h-5 w-5 text-gray-400" />
                     </div>
-                    <Input className="pl-10 h-12" placeholder="Enter your website URL" disabled={isLoading} required />
+                    <Input
+                      className="pl-10 h-12"
+                      placeholder="Enter your website URL"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      disabled={isLoading}
+                      required
+                    />
                   </div>
                   <Button type="submit" className="h-12 w-full sm:w-auto" disabled={isLoading}>
                     {isLoading ? (
@@ -116,6 +159,8 @@ export function ToolSelector() {
                     <Input
                       className="pl-10 h-12"
                       placeholder="Enter a keyword (e.g., SEO tools)"
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
                       disabled={isLoading}
                       required
                     />
@@ -148,6 +193,8 @@ export function ToolSelector() {
                     <Input
                       className="pl-10 h-12"
                       placeholder="Enter a domain (e.g., example.com)"
+                      value={domain}
+                      onChange={(e) => setDomain(e.target.value)}
                       disabled={isLoading}
                       required
                     />

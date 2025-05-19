@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   CheckCircle,
   AlertCircle,
@@ -156,6 +157,15 @@ export function SEOResults({ results }: { results: AnalysisResult }) {
               </Button>
             </div>
           </div>
+          {results.apiRateLimited && (
+            <Alert variant="warning" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {results.apiRateLimitedMessage ||
+                  "PageSpeed API rate limit exceeded. Using estimated performance data."}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardHeader>
 
         <Tabs defaultValue="overview" value={activeTab} onValueChange={setActiveTab}>

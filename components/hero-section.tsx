@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { SEOResults } from "@/components/seo-results"
 import { ToolSelector } from "@/components/tool-selector"
@@ -10,6 +10,64 @@ export function HeroSection() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [results, setResults] = useState<AnalysisResult | null>(null)
+  const [urlToAnalyze, setUrlToAnalyze] = useState<string | null>(null)
+
+  // Check for URL parameter on load
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      if (hash.startsWith("#seo-results")) {
+        const urlParams = new URLSearchParams(hash.split("?")[1])
+        const url = urlParams.get("url")
+        if (url && url !== urlToAnalyze) {
+          setUrlToAnalyze(url)
+        }
+      }
+    }
+
+    // Check on initial load
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange)
+    return () => window.removeEventListener("hashchange", handleHashChange)
+  }, [urlToAnalyze])
+
+  // Run analysis when URL changes
+  useEffect(() => {
+    const analyzeUrl = async () => {
+      if (!urlToAnalyze) return
+
+      setIsAnalyzing(true)
+      setError(null)
+
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ url: urlToAnalyze }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to analyze URL")
+        }
+
+        const data = await response.json()
+        setResults(data)
+      } catch (error) {
+        console.error("Error analyzing URL:", error)
+        setError(error instanceof Error ? error.message : "An unknown error occurred")
+      } finally {
+        setIsAnalyzing(false)
+      }
+    }
+
+    if (urlToAnalyze) {
+      analyzeUrl()
+    }
+  }, [urlToAnalyze])
 
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
