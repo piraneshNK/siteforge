@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 interface Backlink {
   url: string
@@ -36,25 +36,33 @@ interface BacklinkData {
   backlinks: Backlink[]
 }
 
-export function BacklinkCheckerClient() {
-  const [domain, setDomain] = useState("")
+interface BacklinkCheckerClientProps {
+  initialDomain?: string
+}
+
+export function BacklinkCheckerClient({ initialDomain = "" }: BacklinkCheckerClientProps) {
+  const [domain, setDomain] = useState(initialDomain)
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<BacklinkData | null>(null)
-  const searchParams = useSearchParams()
+  const router = useRouter()
 
+  // Use the initialDomain prop instead of useSearchParams
   useEffect(() => {
-    const domainParam = searchParams.get("domain")
-    if (domainParam) {
-      setDomain(domainParam)
-      handleAnalyze(domainParam)
+    if (initialDomain) {
+      handleAnalyze(initialDomain)
     }
-  }, [searchParams])
+  }, [initialDomain])
 
   const handleAnalyze = async (analyzeDomain?: string) => {
     const domainToAnalyze = analyzeDomain || domain
     if (!domainToAnalyze) return
 
     setIsLoading(true)
+
+    // Update the URL with the domain parameter
+    if (analyzeDomain !== initialDomain) {
+      router.push(`/tools/backlink-checker?domain=${encodeURIComponent(domainToAnalyze)}`)
+    }
 
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 2000))

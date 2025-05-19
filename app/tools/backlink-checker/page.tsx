@@ -3,13 +3,17 @@ import { SiteFooter } from "@/components/site-footer"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { BacklinkCheckerClient } from "./backlink-checker-client"
+import { Suspense } from "react"
 
 export const metadata = {
   title: "Backlink Checker - SiteForge",
   description: "Analyze your backlink profile and find opportunities for improvement.",
 }
 
-export default function BacklinkCheckerPage() {
+export default function BacklinkCheckerPage({ searchParams }: { searchParams: { domain?: string } }) {
+  // Get the domain from the URL query parameters at the server level
+  const domain = searchParams.domain || ""
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -29,7 +33,15 @@ export default function BacklinkCheckerPage() {
             </p>
           </div>
 
-          <BacklinkCheckerClient />
+          <Suspense
+            fallback={
+              <div className="text-center p-12 border rounded-lg bg-gray-50">
+                <p className="text-gray-500">Loading backlink checker...</p>
+              </div>
+            }
+          >
+            <BacklinkCheckerClient initialDomain={domain} />
+          </Suspense>
         </div>
       </main>
       <SiteFooter />

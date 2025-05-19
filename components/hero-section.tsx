@@ -14,23 +14,13 @@ export function HeroSection() {
 
   // Check for URL parameter on load
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash
-      if (hash.startsWith("#seo-results")) {
-        const urlParams = new URLSearchParams(hash.split("?")[1])
-        const url = urlParams.get("url")
-        if (url && url !== urlToAnalyze) {
-          setUrlToAnalyze(url)
-        }
-      }
+    // Check if there's an analyzed URL in sessionStorage
+    const storedUrl = sessionStorage.getItem("analyzedUrl")
+    if (storedUrl && storedUrl !== urlToAnalyze) {
+      setUrlToAnalyze(storedUrl)
+      // Clear it after using to prevent reanalysis on page refresh
+      sessionStorage.removeItem("analyzedUrl")
     }
-
-    // Check on initial load
-    handleHashChange()
-
-    // Listen for hash changes
-    window.addEventListener("hashchange", handleHashChange)
-    return () => window.removeEventListener("hashchange", handleHashChange)
   }, [urlToAnalyze])
 
   // Run analysis when URL changes

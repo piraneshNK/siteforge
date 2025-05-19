@@ -49,8 +49,18 @@ export function ToolSelector() {
       // For now, we'll just simulate a delay
       setTimeout(() => {
         setIsLoading(false)
-        // Trigger a page refresh to show results
-        window.location.href = `/#seo-results?url=${encodeURIComponent(url)}`
+
+        // Store the URL in sessionStorage instead of using the hash with query parameters
+        sessionStorage.setItem("analyzedUrl", url)
+
+        // Navigate to the results section without query parameters in the hash
+        window.location.hash = "seo-results"
+
+        // Scroll to results section
+        const resultsSection = document.getElementById("seo-results")
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ behavior: "smooth" })
+        }
       }, 1500)
     } catch (error) {
       console.error("Error analyzing URL:", error)
