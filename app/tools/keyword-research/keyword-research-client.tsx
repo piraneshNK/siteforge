@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,8 +10,7 @@ import { Search, TrendingUp, ArrowDown, ArrowUp, Download, Loader2 } from "lucid
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { useSearchParams } from "next/navigation"
-import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 interface KeywordResult {
   keyword: string
@@ -21,25 +20,32 @@ interface KeywordResult {
   trend: "up" | "down" | "stable"
 }
 
-export function KeywordResearchClient() {
-  const [keyword, setKeyword] = useState("")
+interface KeywordResearchClientProps {
+  initialKeyword: string
+}
+
+export function KeywordResearchClient({ initialKeyword }: KeywordResearchClientProps) {
+  const [keyword, setKeyword] = useState(initialKeyword)
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<KeywordResult[] | null>(null)
-  const searchParams = useSearchParams()
+  const router = useRouter()
 
   useEffect(() => {
-    const keywordParam = searchParams.get("keyword")
-    if (keywordParam) {
-      setKeyword(keywordParam)
-      handleResearch(keywordParam)
+    if (initialKeyword) {
+      handleResearch(initialKeyword)
     }
-  }, [searchParams])
+  }, [initialKeyword])
 
   const handleResearch = async (searchKeyword?: string) => {
     const keywordToSearch = searchKeyword || keyword
     if (!keywordToSearch) return
 
     setIsLoading(true)
+
+    // Update URL with the keyword
+    if (keywordToSearch !== initialKeyword) {
+      router.push(`/tools/keyword-research?keyword=${encodeURIComponent(keywordToSearch)}`)
+    }
 
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 1500))

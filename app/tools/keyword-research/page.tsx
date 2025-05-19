@@ -1,15 +1,23 @@
+import { Suspense } from "react"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { KeywordResearchClient } from "./keyword-research-client"
+import { Loader2 } from "lucide-react"
 
 export const metadata = {
   title: "Keyword Research Tool - SiteForge",
   description: "Find the best keywords to target for your content and SEO strategy.",
 }
 
-export default function KeywordResearchPage() {
+export default function KeywordResearchPage({
+  searchParams,
+}: {
+  searchParams: { keyword?: string }
+}) {
+  const initialKeyword = searchParams.keyword || ""
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -29,7 +37,16 @@ export default function KeywordResearchPage() {
             </p>
           </div>
 
-          <KeywordResearchClient />
+          <Suspense
+            fallback={
+              <div className="text-center p-12 border rounded-lg bg-gray-50">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                <p className="text-gray-500">Loading keyword research tool...</p>
+              </div>
+            }
+          >
+            <KeywordResearchClient initialKeyword={initialKeyword} />
+          </Suspense>
         </div>
       </main>
       <SiteFooter />
